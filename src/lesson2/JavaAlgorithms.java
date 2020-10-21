@@ -147,19 +147,19 @@ throw new NotImplementedError();
      * Единица простым числом не считается.
      */
     static public int calcPrimesNumber(int limit) {
-        //Трудоемкость - O(nlog(log(n))/), n = limit
+        //Трудоемкость - O(nlog(log(n))), n = limit
         //Ресурсоемкость - O(n)
         int counter = 0;
         if (limit > 1) {
-            int[] grid = new int[limit + 1];
-            Arrays.fill(grid, 1);
+            boolean[] grid = new boolean[limit + 1];
+            Arrays.fill(grid, true);
 
 
             for (int i = 2; i <= limit; i++) {
-                if (grid[i] == 1) {
+                if (grid[i]) {
                     counter++;
                     for (int j = i; j <= limit; j += i) {
-                        grid[j] = 0;
+                        grid[j] = false;
                     }
                 }
             }

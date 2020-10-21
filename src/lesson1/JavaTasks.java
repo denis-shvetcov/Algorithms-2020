@@ -74,8 +74,9 @@ public class JavaTasks {
      * <p>
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
-    static public void sortAddresses(String inputName, String outputName) {
-        //Трудоемкость - N*logN
+    static public void sortAddresses(String inputName, String outputName) throws Exception {
+        //Трудоемкость - O(N*logN)
+        //Ресурсоемкость - O(N)
         List<String> lines = new ArrayList<>();
         try (BufferedReader reader = Files.newBufferedReader(Paths.get(inputName))) {
             String formRegex = "(\\w|-)+\\s(\\w|-)+\\s-\\s(\\w|-)+\\s\\d+";
@@ -87,10 +88,8 @@ public class JavaTasks {
                 if (matcher.replaceFirst("").equals(""))
                     lines.add(fullLine);
                 else
-                    throw new Exception();
+                    throw new Exception("Wrong format");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
         Comparator comparator1 = (o1, o2) -> {
@@ -123,7 +122,6 @@ public class JavaTasks {
                     splitted[0].trim().split(" ")[0], splitted[0].trim().split(" ")[1]);
             addresses.putIfAbsent(key, new TreeSet<Map.Entry<String, String>>(comparator2));
             addresses.get(key).add(value);
-
         });
 
         try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputName))) {
@@ -136,8 +134,6 @@ public class JavaTasks {
                         streetPeople.getKey().getValue(), String.join(", ", secondsNames)));
                 writer.newLine();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -171,10 +167,10 @@ public class JavaTasks {
      * 99.5
      * 121.3
      */
-    static public void sortTemperatures(String inputName, String outputName) {
+    static public void sortTemperatures(String inputName, String outputName) throws Exception {
 
         // Трудоемкость - O(n+k)
-        // Ресурсоемкость -
+        // Ресурсоемкость - O(n)
 
         int min = -273;
         int max = 500;
@@ -187,10 +183,8 @@ public class JavaTasks {
                 if (temp.replaceFirst(formRegex, "").equals("")){
                     temps.add(((int) (Double.parseDouble(temp)*10))+2730);}
                 else
-                    throw new Exception();
+                    throw new Exception("Wrong format");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
         int[] tempsArr = new int[temps.size()];
@@ -203,8 +197,6 @@ public class JavaTasks {
                 writer.write(String.format("%s%d.%d", decimated>=0? "" : "-",Math.abs(decimated/10),Math.abs(decimated)%10));
                 writer.newLine();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
     }

@@ -20,6 +20,7 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
         }
     }
 
+
     private Node<T> root = null;
 
     private int size = 0;
@@ -99,59 +100,76 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
      */
     @Override
     public boolean remove(Object o) {
-
+        //Трудоемкость - O(log(n)) - не уверен, что правильно оценил
+        //Ресурсоемкость - О(1)
         if (root == null || !contains(o)) return false;
-        return remove(root, root, (T) o);
+        remove(root, null, (T) o);
+
+        size--;
+        return true;
     }
 
 
-    private boolean remove(Node<T> current, Node<T> parent, T toR) {
+    private Node<T> findLeaf(boolean rightSubTree, Node<T> start) {
+        //rightSubTree - для поиска в левом/правом поддереве
+        if (rightSubTree) {
+            while (start.left != null)
+                start = start.left;
+
+        } else {
+            while (start.right != null)
+                start = start.right;
+        }
+        return start;
+    }
+
+    private void remove(Node<T> current, Node<T> parent, T toR) {
+        if (root.value == toR && parent == null) {
+            Node<T> smallest;
+            if (root.right != null)
+                smallest = findLeaf(true, current.right);
+            else
+                smallest = findLeaf(false, current.left);
+
+            Node<T> replace = new Node<T>(smallest.value);
+            replace.left = current.left;
+            replace.right = current.right;
+            root = replace;
+            if (root.right != null)
+                remove(replace.right, root, smallest.value);
+            else
+                remove(replace.left, root, smallest.value);
+            return;
+        }
         int comparision = toR.compareTo(current.value);
         if (comparision > 0) {
             remove(current.right, current, toR);
         } else if (comparision < 0) { // выбор поддеревьев
             remove(current.left, current, toR);
         } else {
-            if (current.left == null && current.right == null) {
-                if (parent.value.compareTo(toR) > 0) parent.left = null;
-                else parent.right = null;
-                return true;
-            } else if (current.left == null || current.right == null) {
-                if (parent.value.compareTo(toR) < 0)
+            if (current.left == null && current.right == null) { //лист
+                if (parent.value.compareTo(toR) > 0)
+                    parent.left = null;
+                else
+                    parent.right = null;
+            } else if (current.left == null || current.right == null) { // 1 потомок
+                if (parent.value.compareTo(toR) <= 0) {
                     parent.right = current.left != null ? current.left : current.right;
-                else if (parent.value.compareTo(toR) > 0)
+                } else if (parent.value.compareTo(toR) > 0)
                     parent.left = current.left != null ? current.left : current.right;
-                return true;
-            } else {
-                Node<T> term = current.right;
-
-                while (true) {
-                    if (term.left != null)
-                        term = term.left;
-                    else
-                        break;
-                }
-                Node<T> replace = new Node<>(toR);
-                replace.left = current.left;
+            } else { // 2 потомка
+                Node<T> smallest = findLeaf(true, current.right);
+                Node<T> replace = new Node<T>(smallest.value);
+                replace.left = current.left; //присваиваем child элементу-замене
                 replace.right = current.right;
-
-                if (parent.left == toR)
+                // установка нового child
+                if (parent.value.compareTo(toR) > 0)
                     parent.left = replace;
                 else
                     parent.right = replace;
-                //выбор ветки
-                if (term.value.compareTo(current.value) > 0)
-                    remove(current.right, current, toR);
-                else
-                    remove(current.left, current, toR);
-
+                remove(replace.right, replace, smallest.value);
             }
         }
-
-        // создать новый узел и присвоить ему потомков узла, в который записываем новое значение
-        // TODO
-        return true;
-
     }
 
     @Nullable
@@ -167,9 +185,34 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
     }
 
     public class BinarySearchTreeIterator implements Iterator<T> {
+        Node<T> current;
+        private Stack<T> stackNodes = new Stack<>();
+        private T returned;
 
         private BinarySearchTreeIterator() {
-            // Добавьте сюда инициализацию, если она необходима.
+
+            if (root != null) {
+                fillStack(root);
+                stackNodes.remove(0); //дублируется первый элемент - нужно удалить
+            } //создать стек
+
+        }
+
+        private void fillStack(Node<T> cur) {
+            //Трудоемкость - O(n)
+            //Ресурсоемкость - О(1)
+            if (cur.right != null) {
+                fillStack(cur.right);
+            } else {
+                stackNodes.push(cur.value);
+            }
+
+            if (cur.left != null)
+                fillStack(cur.left);
+            else {
+                stackNodes.push(cur.value);
+                current = cur;
+            }
         }
 
         /**
@@ -184,8 +227,9 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
          */
         @Override
         public boolean hasNext() {
-            // TODO
-            throw new NotImplementedError();
+            //Трудоемкость - O(1)
+            //Ресурсоемкость - О(1)
+            return !stackNodes.isEmpty();
         }
 
         /**
@@ -203,8 +247,11 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
          */
         @Override
         public T next() {
-            // TODO
-            throw new NotImplementedError();
+            //Трудоемкость - O(1)
+            //Ресурсоемкость - О(1)
+            if (hasNext()) {
+                return returned = stackNodes.pop();
+            } else throw new NoSuchElementException();
         }
 
         /**
@@ -221,8 +268,14 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
          */
         @Override
         public void remove() {
-            // TODO
-            throw new NotImplementedError();
+            //Трудоемкость - O(log(n))
+            //Ресурсоемкость - О(1)
+            if (size == stackNodes.size() || returned == null)
+                throw new IllegalStateException();
+            else {
+                BinarySearchTree.this.remove(returned);
+                returned = null;
+            }
         }
 
     }
