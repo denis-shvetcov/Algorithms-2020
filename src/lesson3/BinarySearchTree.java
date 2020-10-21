@@ -102,9 +102,8 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
     public boolean remove(Object o) {
         //Трудоемкость - O(log(n)) - не уверен, что правильно оценил
         //Ресурсоемкость - О(1)
-        if (root == null || !contains(o)) return false;
+        if (root == null || !contains(o) || root.value == null) return false;
         remove(root, null, (T) o);
-
         size--;
         return true;
     }
@@ -134,7 +133,6 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
                 root = null;
                 return;
             }
-
             Node<T> replace = new Node<T>(smallest.value);
             replace.left = current.left;
             replace.right = current.right;
