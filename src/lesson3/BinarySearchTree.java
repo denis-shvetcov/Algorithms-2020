@@ -190,12 +190,10 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
         private T returned;
 
         private BinarySearchTreeIterator() {
-
             if (root != null) {
                 fillStack(root);
                 stackNodes.remove(0); //дублируется первый элемент - нужно удалить
             } //создать стек
-
         }
 
         private void fillStack(Node<T> cur) {
