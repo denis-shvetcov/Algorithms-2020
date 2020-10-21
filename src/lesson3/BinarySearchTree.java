@@ -128,8 +128,12 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
             Node<T> smallest;
             if (root.right != null)
                 smallest = findLeaf(true, current.right);
-            else
+            else if (root.left!=null)
                 smallest = findLeaf(false, current.left);
+            else{
+                root = null;
+                return;
+            }
 
             Node<T> replace = new Node<T>(smallest.value);
             replace.left = current.left;
@@ -185,7 +189,6 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
     }
 
     public class BinarySearchTreeIterator implements Iterator<T> {
-        Node<T> current;
         private Stack<T> stackNodes = new Stack<>();
         private T returned;
 
@@ -204,12 +207,10 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
             } else {
                 stackNodes.push(cur.value);
             }
-
             if (cur.left != null)
                 fillStack(cur.left);
             else {
                 stackNodes.push(cur.value);
-                current = cur;
             }
         }
 
