@@ -108,6 +108,58 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
         return true;
     }
 
+    private void remove(Node<T> current, Node<T> parent, T toR) {
+        int comparision;
+        while((comparision = toR.compareTo(current.value))!=0) {
+            if (comparision > 0) {
+                parent = current;
+                current = current.right;
+            } else {
+                parent = current;
+                current = current.left;
+            }
+        }
+        if (parent == null) {
+            Node<T> replace;
+            if (current.right != null || current.left != null) {
+                if (current.right != null)
+                    replace = new Node<T>(findLeaf(true, current.right).value);
+                else
+                    replace = new Node<T>(findLeaf(false, current.left).value);
+                replace.left = current.left;
+                replace.right = current.right;
+                root = replace;
+            } else {
+                root = null;
+                return;
+            }
+            if (replace.right!=null)
+                remove(replace.right, replace, replace.value);
+            else
+                remove(replace.left, replace, replace.value);
+        } else if (current.left == null && current.right == null) { //лист
+            if (parent.value.compareTo(toR) > 0)
+                parent.left = null;
+            else
+                parent.right = null;
+        } else if (current.left == null || current.right == null) { // 1 потомок
+            if (parent.value.compareTo(toR) <= 0) {
+                parent.right = current.left != null ? current.left : current.right;
+            } else if (parent.value.compareTo(toR) > 0)
+                parent.left = current.left != null ? current.left : current.right;
+        } else {
+            Node<T> smallest = findLeaf(true, current.right);
+            Node<T> replace = new Node<T>(smallest.value);
+            replace.left = current.left; //присваиваем child элементу-замене
+            replace.right = current.right;
+            // установка нового child
+            if (parent.value.compareTo(toR) > 0)
+                parent.left = replace;
+            else
+                parent.right = replace;
+            remove(replace.right, replace, replace.value);
+        }
+    }
 
     private Node<T> findLeaf(boolean rightSubTree, Node<T> start) {
         //rightSubTree - для поиска в левом/правом поддереве
@@ -120,58 +172,6 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
                 start = start.right;
         }
         return start;
-    }
-
-    private void remove(Node<T> current, Node<T> parent, T toR) {
-        if (root.value == toR && parent == null) {
-            Node<T> smallest;
-            if (root.right != null)
-                smallest = findLeaf(true, current.right);
-            else if (root.left!=null)
-                smallest = findLeaf(false, current.left);
-            else{
-                root = null;
-                return;
-            }
-            Node<T> replace = new Node<T>(smallest.value);
-            replace.left = current.left;
-            replace.right = current.right;
-            root = replace;
-            if (root.right != null)
-                remove(replace.right, root, smallest.value);
-            else
-                remove(replace.left, root, smallest.value);
-            return;
-        }
-        int comparision = toR.compareTo(current.value);
-        if (comparision > 0) {
-            remove(current.right, current, toR);
-        } else if (comparision < 0) { // выбор поддеревьев
-            remove(current.left, current, toR);
-        } else {
-            if (current.left == null && current.right == null) { //лист
-                if (parent.value.compareTo(toR) > 0)
-                    parent.left = null;
-                else
-                    parent.right = null;
-            } else if (current.left == null || current.right == null) { // 1 потомок
-                if (parent.value.compareTo(toR) <= 0) {
-                    parent.right = current.left != null ? current.left : current.right;
-                } else if (parent.value.compareTo(toR) > 0)
-                    parent.left = current.left != null ? current.left : current.right;
-            } else { // 2 потомка
-                Node<T> smallest = findLeaf(true, current.right);
-                Node<T> replace = new Node<T>(smallest.value);
-                replace.left = current.left; //присваиваем child элементу-замене
-                replace.right = current.right;
-                // установка нового child
-                if (parent.value.compareTo(toR) > 0)
-                    parent.left = replace;
-                else
-                    parent.right = replace;
-                remove(replace.right, replace, smallest.value);
-            }
-        }
     }
 
     @Nullable
