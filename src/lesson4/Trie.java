@@ -74,7 +74,6 @@ public class Trie extends AbstractSet<String> implements Set<String> {
     public boolean remove(Object o) {
         String element = (String) o;
         Node current = findNode(element);
-        System.out.println(element);
         if (current == null) return false;
         if (current.children.remove((char) 0) != null) {
             size--;
@@ -143,10 +142,16 @@ public class Trie extends AbstractSet<String> implements Set<String> {
         public void remove() {
             //Трудоемкость - O(n) , n - длина returned
             //Ресурсоемкость - О(1)
-            if (size == nodes.size() || returned == null)
+            if (returned == null)
                 throw new IllegalStateException();
             else {
+//                System.out.println("Nodes:");
+//                System.out.println();
+//                System.out.println(nodes);
                 Trie.this.remove(returned);
+//                System.out.println("Nodes:");
+//                System.out.println();
+//                System.out.println(nodes);
                 returned = null;
             }
         }
