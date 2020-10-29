@@ -145,13 +145,7 @@ public class Trie extends AbstractSet<String> implements Set<String> {
             if (returned == null)
                 throw new IllegalStateException();
             else {
-//                System.out.println("Nodes:");
-//                System.out.println();
-//                System.out.println(nodes);
                 Trie.this.remove(returned);
-//                System.out.println("Nodes:");
-//                System.out.println();
-//                System.out.println(nodes);
                 returned = null;
             }
         }
