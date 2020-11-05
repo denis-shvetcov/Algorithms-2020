@@ -187,14 +187,15 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
     }
 
     public class BinarySearchTreeIterator implements Iterator<T> {
-        private Stack<T> stackNodes = new Stack<>();
+        private Deque<T> nodes = new ArrayDeque<>();
         private T returned;
 
         private BinarySearchTreeIterator() {
             if (root != null) {
                 fillStack(root);
-                stackNodes.remove(0); //дублируется первый элемент - нужно удалить
+                nodes.removeFirst(); //дублируется первый элемент - нужно удалить
             } //создать стек
+
         }
 
         private void fillStack(Node<T> cur) {
@@ -203,12 +204,12 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
             if (cur.right != null) {
                 fillStack(cur.right);
             } else {
-                stackNodes.push(cur.value);
+                nodes.addLast(cur.value);
             }
             if (cur.left != null)
                 fillStack(cur.left);
             else {
-                stackNodes.push(cur.value);
+                nodes.addLast(cur.value);
             }
         }
 
@@ -226,7 +227,7 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
         public boolean hasNext() {
             //Трудоемкость - O(1)
             //Ресурсоемкость - О(1)
-            return !stackNodes.isEmpty();
+            return !nodes.isEmpty();
         }
 
         /**
@@ -247,7 +248,7 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
             //Трудоемкость - O(1)
             //Ресурсоемкость - О(1)
             if (hasNext()) {
-                return returned = stackNodes.pop();
+                return returned = nodes.pollLast();
             } else throw new NoSuchElementException();
         }
 
@@ -267,7 +268,7 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
         public void remove() {
             //Трудоемкость - O(log(n))
             //Ресурсоемкость - О(1)
-            if (size == stackNodes.size() || returned == null)
+            if (size == nodes.size() || returned == null)
                 throw new IllegalStateException();
             else {
                 BinarySearchTree.this.remove(returned);

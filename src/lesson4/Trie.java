@@ -98,7 +98,7 @@ public class Trie extends AbstractSet<String> implements Set<String> {
     }
 
     public class TrieIterator<T extends String> implements Iterator<T> {
-        Stack<String> nodes = new Stack<>();
+        Deque<String> nodes = new ArrayDeque<>();
         String returned = null;
 
 
@@ -112,10 +112,12 @@ public class Trie extends AbstractSet<String> implements Set<String> {
             if (current.children != null && !current.children.isEmpty()) {
                 for (Map.Entry<Character, Node> keyVal : current.children.entrySet()) {
                     char key = keyVal.getKey();
-                    fillStack(keyVal.getValue(), sequence + key);
+
+                        fillStack(keyVal.getValue(), sequence + key);
                 }
-            } else {
-                nodes.add(sequence.substring(0, sequence.length() - 1));
+            }
+            else {
+                if (sequence.endsWith("\u0000")) nodes.addLast(sequence.substring(0, sequence.length() - 1));
             }
         }
 
@@ -124,7 +126,7 @@ public class Trie extends AbstractSet<String> implements Set<String> {
         public boolean hasNext() {
             //Трудоемкость - O(1)
             //Ресурсоемкость - О(1)
-            return !nodes.empty();
+            return !nodes.isEmpty();
         }
 
         @Override
@@ -132,7 +134,7 @@ public class Trie extends AbstractSet<String> implements Set<String> {
             //Трудоемкость - O(1)
             //Ресурсоемкость - О(1)
             if (hasNext()) {
-                returned = nodes.pop();
+                returned = nodes.pollLast();
                 return (T) returned;
             }
             else throw new NoSuchElementException();

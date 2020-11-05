@@ -180,11 +180,7 @@ public class JavaTasks {
             String formRegex = "-?\\d+.\\d";
             String temp;
             while ((temp = reader.readLine()) != null) {
-                if (temp.replaceFirst(formRegex, "").equals("")){
                     temps.add(((int) (Double.parseDouble(temp)*10))+2730);}
-                else
-                    throw new Exception("Wrong format");
-            }
         }
 
         int[] tempsArr = new int[temps.size()];
