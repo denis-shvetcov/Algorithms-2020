@@ -119,9 +119,7 @@ public class JavaGraphTasks {
             visited.clear();
             vertexCounter.clear();
             stack.push(vertex);
-
             while (!stack.isEmpty()) {
-
                 Set<Graph.Vertex> neighbours = graph.getNeighbors(vertex);
 //                if (visited.contains(stack.peek())) return true;
                 for (Graph.Vertex neighbour : neighbours) {
