@@ -104,6 +104,7 @@ public class JavaGraphTasks {
             for (Graph.Vertex neighbour : neighbours) {
                 System.out.println("Neighbour: " + neighbour);
             }
+
             neighbours.forEach(neighbour-> result.remove(neighbour));
         }
         return result;
