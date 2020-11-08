@@ -95,7 +95,7 @@ public class JavaGraphTasks {
      * Эта задача может быть зачтена за пятый и шестой урок одновременно
      */
     public static Set<Graph.Vertex> largestIndependentVertexSet(Graph graph) {
-        if (isCyclic(graph)) throw new IllegalArgumentException();
+//        if (isCyclic(graph)) throw new IllegalArgumentException();
         Set<Graph.Vertex> vertices = graph.getVertices();
         Set<Graph.Vertex> result = new HashSet<>(vertices);
         for (Graph.Vertex vertex: vertices) {
