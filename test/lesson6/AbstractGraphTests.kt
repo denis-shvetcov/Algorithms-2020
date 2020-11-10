@@ -1,7 +1,9 @@
 package lesson6
 
 import lesson6.impl.GraphBuilder
+import kotlin.IllegalArgumentException
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 abstract class AbstractGraphTests {
@@ -258,6 +260,20 @@ abstract class AbstractGraphTests {
             setOf(cross["A"], cross["B"], cross["C"], cross["D"]),
             cross.largestIndependentVertexSet()
         )
+        // проверка цикличного графа
+        val cycled = GraphBuilder().apply {
+            val a = addVertex("A")
+            val b = addVertex("B")
+            val c = addVertex("C")
+            val d = addVertex("D")
+            val e = addVertex("E")
+            addConnection(a, e)
+            addConnection(a, b)
+            addConnection(b, c)
+            addConnection(c, d)
+            addConnection(d, a)
+        }.build()
+        assertFailsWith<IllegalArgumentException> { cycled.largestIndependentVertexSet() }
     }
 
     fun longestSimplePath(longestSimplePath: Graph.() -> Path) {
@@ -283,6 +299,7 @@ abstract class AbstractGraphTests {
             addConnection(d, e)
         }.build()
         val longestUnconnectedPath = unconnected.longestSimplePath()
+        println(longestUnconnectedPath.vertices)
         assertEquals(2, longestUnconnectedPath.length)
 
         val graph = GraphBuilder().apply {
@@ -351,6 +368,22 @@ abstract class AbstractGraphTests {
         }.build()
         val longestPath3 = graph3.longestSimplePath()
         assertEquals(6, longestPath3.length)
+
+        val cycled = GraphBuilder().apply {
+            val a = addVertex("A")
+            val b = addVertex("B")
+            val c = addVertex("C")
+            val d = addVertex("D")
+            val e = addVertex("E")
+            addConnection(a, b)
+            addConnection(b, c)
+            addConnection(c, d)
+            addConnection(d, e)
+            addConnection(e, a)
+        }.build()
+        val cycledPath = cycled.longestSimplePath()
+        print(cycledPath.vertices)
+        assertEquals(4, cycledPath.length)
     }
 
     fun baldaSearcher(baldaSearcher: (String, Set<String>) -> Set<String>) {

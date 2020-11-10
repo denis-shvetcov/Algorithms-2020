@@ -95,47 +95,46 @@ public class JavaGraphTasks {
      * Эта задача может быть зачтена за пятый и шестой урок одновременно
      */
     public static Set<Graph.Vertex> largestIndependentVertexSet(Graph graph) {
-//        if (isCyclic(graph)) throw new IllegalArgumentException();
+        //Трудоемкость - O(n), n - размер графа
+        //Ресурсоемкость - O(n), n -размер графа
+        isCyclic(graph);
         Set<Graph.Vertex> vertices = graph.getVertices();
         Set<Graph.Vertex> result = new HashSet<>(vertices);
-        for (Graph.Vertex vertex: vertices) {
+        for (Graph.Vertex vertex : vertices) {
             if (!result.contains(vertex)) continue;
             Set<Graph.Vertex> neighbours = graph.getNeighbors(vertex);
-            for (Graph.Vertex neighbour : neighbours) {
-                System.out.println("Neighbour: " + neighbour);
-            }
-
-            neighbours.forEach(neighbour-> result.remove(neighbour));
+            neighbours.forEach(result::remove);
         }
         return result;
     }
 
 
-    private static boolean isCyclic(Graph graph) {
+    private static void isCyclic(Graph graph) {
+        // Не знаю, как оценить трудоемкость
+        //Ресурсоемкость - O(n) , n - размер графа
         Set<Graph.Vertex> vertices = graph.getVertices();
-        List<Graph.Vertex> visited = new ArrayList<>();
-        Stack<Graph.Vertex> stack = new Stack<>();
-        Map<Graph.Vertex,List<Boolean>> vertexCounter = new HashMap<>();
-        for (Graph.Vertex vertex : vertices) {
+        Set<Graph.Edge> visited = new HashSet<>();
+        Map<Graph.Vertex ,Graph.Edge> rootEdges;
+        Set<Graph.Edge> previous = null;
+        for (Graph.Vertex vertex: vertices) {
             visited.clear();
-            vertexCounter.clear();
-            stack.push(vertex);
-            while (!stack.isEmpty()) {
-                Set<Graph.Vertex> neighbours = graph.getNeighbors(vertex);
-//                if (visited.contains(stack.peek())) return true;
-                for (Graph.Vertex neighbour : neighbours) {
-                    stack.push(neighbour);
-                    vertexCounter.putIfAbsent(neighbour, new ArrayList<>());
-                    vertexCounter.get(neighbour).add(true);
-                }
-                stack.pop();
+            dfs(visited,vertex,null, graph);
             }
-            // по идее все соседи vertex должны увеличить счетчик на 1, то есть счетчик не должен превышать число
-            // соседей vertex, если же есть цикл, то счетчик будет больше числа соседей vertex.
         }
-        return false;
-    }
 
+
+private static void dfs(Set<Graph.Edge> visited, Graph.Vertex current,Graph.Edge previous, Graph graph) {
+    Map<Graph.Vertex ,Graph.Edge> rootEdges = graph.getConnections(current);
+
+        for(Map.Entry<Graph.Vertex ,Graph.Edge> keyVal: rootEdges.entrySet()){
+            Graph.Edge edge = keyVal.getValue();
+            //если дважды проходим по одному и тому же ребру - цикл
+            if (visited.contains(edge) && previous!=edge) {throw new IllegalArgumentException();}
+            visited.add(edge);
+            if (previous!=edge) dfs(visited,keyVal.getKey(),edge, graph);
+        }
+
+}
     /**
      * Наидлиннейший простой путь.
      * Сложная
@@ -157,12 +156,14 @@ public class JavaGraphTasks {
      * Ответ: A, E, J, K, D, C, H, G, B, F, I
      */
     public static Path longestSimplePath(Graph graph) {
+        // Трудоемкость - O(n+v) , n- число вершин, v - число ребер
+        //Ресурсоемкость - O(n) , n- число вершин
         Set<Graph.Vertex> vertices = graph.getVertices();
         if (vertices.isEmpty()) return new Path();
         PriorityQueue<Path> queue = new PriorityQueue<>();
         vertices.forEach(vertex -> queue.add(new Path(vertex)));
         Path longest = queue.poll();
-        Path currentPath = longest;
+        Path currentPath;
         while ((currentPath = queue.poll()) != null) {
             List<Graph.Vertex> currentPathVerticles = currentPath.getVertices();
             Set<Graph.Vertex> neighbours = graph.getNeighbors(currentPathVerticles.get(currentPathVerticles.size() - 1)); // соседи последнего узла в Path
