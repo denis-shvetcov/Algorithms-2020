@@ -393,6 +393,7 @@ abstract class AbstractBinarySearchTreeTest {
                         "An element of the subset was not removed."
                     )
                 } else {
+
                     assertFailsWith<IllegalArgumentException>("An illegal argument was passed to remove() without raising an exception") {
                         subSet.remove(element)
                     }

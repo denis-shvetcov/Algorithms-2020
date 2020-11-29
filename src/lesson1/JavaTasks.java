@@ -168,10 +168,8 @@ public class JavaTasks {
      * 121.3
      */
     static public void sortTemperatures(String inputName, String outputName) throws Exception {
-
         // Трудоемкость - O(n+k)
         // Ресурсоемкость - O(n)
-
         int min = -273;
         int max = 500;
 
